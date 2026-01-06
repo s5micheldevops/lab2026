@@ -1,0 +1,20 @@
+﻿name: CI  # Nom du workflow, visible dans l'onglet GitHub Actions
+
+on:  # Definit quand le workflow doit s'executer
+  pull_request:  # Se declenche a chaque Pull Request (avant le merge)
+  push:  # Se declenche aussi lors d'un push
+    branches: [ main ]  # Uniquement quand le push est fait sur la branche main
+
+jobs:  # Liste des jobs du workflow (un workflow peut en avoir plusieurs)
+  build-test:  # Nom du job (libre, sert d'identifiant)
+    runs-on: ubuntu-latest  # Machine virtuelle Ubuntu fournie par GitHub (runner)
+
+    steps:  # Liste des etapes executees dans ce job, dans l'ordre
+      - name: Checkout source code  # Nom lisible de l'etape
+        uses: actions/checkout@v4  # Action officielle qui clone le repo dans la VM
+
+      - name: Build Docker image  # Etape qui construit l'image Docker
+        run: docker build -t lab2026:ci .  # Docker lit le Dockerfile a la racine (.) et cree l'image
+
+      - name: Run tests inside container  # Etape qui execute les tests
+        run: docker run --rm lab2026:ci  # Lance le conteneur, execute CMD (run-tests.sh), puis le supprime
